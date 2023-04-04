@@ -17,3 +17,8 @@ Make simple html with metroui css styling with flat black buttons and flat text 
 1. To accept pdf upload, load pdf bytes to variable of formatted text (upload ui center of screen)
 2. Call any free chatbot api and pass text from (1) to chatbot
 3. Allow text input to ask questions about pdf  (text ui center of screen)
+
+
+# My other ai generated code (simplistic 3d game)
+
+https://github.com/g0dEngineer/SINGLE_AI_PROMPT_TO_UNITY3D_GAME
