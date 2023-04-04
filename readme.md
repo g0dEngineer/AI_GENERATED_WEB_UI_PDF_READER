@@ -21,4 +21,4 @@ Make simple html with metroui css styling with flat black buttons and flat text 
 
 # My other ai generated code (simplistic 3d game)
 
-https://github.com/g0dEngineer/SINGLE_AI_PROMPT_TO_UNITY3D_GAME
+https://youtu.be/FyT9FncKhHw
