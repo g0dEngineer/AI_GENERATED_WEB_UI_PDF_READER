@@ -1,0 +1,218 @@
+<!---
+Prompt by: God Bennett
+Author: ChatGPT 3.5
+--->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>PDF Chatbot</title>
+	<link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css">
+	<style>
+		body {
+			background-color: #f5f5f5;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			}
+		h1 {
+			color: #333;
+			font-size: 36px;
+			margin: 20px;
+		}
+
+		.upload-btn {
+			background-color: #333;
+			border: none;
+			color: #fff;
+			cursor: pointer;
+			font-size: 18px;
+			padding: 10px 20px;
+			transition: background-color 0.3s ease;
+		}
+
+		.upload-btn:hover {
+			background-color: #444;
+		}
+
+		.question-input {
+			border: none;
+			background-color: transparent;
+			border-bottom: 2px solid #333;
+			font-size: 18px;
+			margin: 20px;
+			padding: 10px;
+			width: 80%;
+		}
+
+		.ask-btn {
+			background-color: #333;
+			border: none;
+			color: #fff;
+			cursor: pointer;
+			font-size: 18px;
+			padding: 10px 20px;
+			transition: background-color 0.3s ease;
+		}
+
+		.ask-btn:hover {
+			background-color: #444;
+		}
+
+		.result {
+			margin: 20px;
+			padding: 10px;
+			text-align: left;
+			width: 80%;
+		}
+		
+		#resultSection {
+			text-align: center;
+			justify-content: center;
+			height: 200px;
+			padding-left: 10%;
+		}
+		
+		#answer
+		{
+			font-color: #000;
+		}
+
+		.result h2 {
+			color: #333;
+			font-size: 24px;
+			margin: 0 0 10px;
+		}
+
+		.result p {
+			font-size: 18px;
+			margin: 10px 0;
+		}
+	</style>
+</head>
+<body>
+	<h1 class="text-center">PDF Chatbot by God Bennett and ChatGPT <a href ="https://www.linkedin.com/feed/update/urn:li:activity:7048673944354091009/">inspired by this.</a></h1>
+	<div class="container">
+		<div class="row">
+			<div class="cell-md-6 offset-md-3">
+				<button class="button upload-btn rounded-0 mx-auto d-block" id="pdf-upload-btn">Upload PDF</button>
+				<input type="file" id="pdf-input" class="d-none">
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell-md-6 offset-md-3">
+				<input type="text" class="question-input rounded-0 mx-auto d-block" placeholder="Enter a question about the PDF...">
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell-md-6 offset-md-3">
+				<button class="button ask-btn rounded-0 mx-auto d-block">Ask</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell-md-6 offset-md-3" id ="resultSection">
+				<div class="result" >
+					<h2 class="text-center"></h2>
+					<p><span id="answer"></span></p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+		<script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script> <!-- Close the script tag here -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+		<script>
+			// Define variables for PDF and chatbot API
+			let pdfText = "";
+			const chatbotAPI = "https://api.example.com/chatbot";
+
+			// Listen for click event on upload button
+			document.getElementById("pdf-upload-btn").addEventListener("click", function() {
+				document.getElementById("pdf-input").click();
+			});
+
+			// Listen for change event on file input
+			// Listen for change event on file input
+			document.getElementById("pdf-input").addEventListener("change", function() {
+				const file = this.files[0];
+				const reader = new FileReader();
+
+				reader.addEventListener("load", function() {
+					// Load PDF file using pdf.js
+					const loadingTask = pdfjsLib.getDocument(new Uint8Array(reader.result));
+
+					loadingTask.promise.then(function(pdf) {
+						// Convert PDF to text using pdf.js
+						const numPages = pdf.numPages;
+						//let pdfText = "";
+
+						for (let i = 1; i <= numPages; i++) {
+							pdf.getPage(i).then(function(page) {
+								page.getTextContent().then(function(textContent) {
+									textContent.items.forEach(function(item) {
+										pdfText += item.str + " ";
+									});
+								});
+							});
+						}
+
+						// Wait for all pages to be processed before logging the text
+						setTimeout(function() {
+							console.log(pdfText);
+						}, numPages * 1000); // Increase the timeout if your PDF has more pages
+					});
+				});
+
+				if (file) {
+					reader.readAsArrayBuffer(file);
+				}
+			});
+
+
+
+						
+			// Listen for click event on ask button
+			document.querySelector(".ask-btn").addEventListener("click", async function() {
+				const question = document.querySelector(".question-input").value;
+				
+					//alert('test');
+					//document.getElementById("answer").innerText = "test";
+
+					// assuming `data` is the JSON response from the API containing the answer
+					document.getElementById("answer").innerText = pdfText;
+					
+				if (question && pdfText) {
+					// Call chatbot API and pass pdfText and question as data
+					const response = await fetch(chatbotAPI, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify({
+							pdfText: pdfText,
+							question: question
+						})
+					});
+
+					// Parse response JSON
+					const data = await response.json();
+
+					// Update result element with answer and confidence
+					document.getElementById("answer").innerText = data.answer;
+					document.getElementById("confidence").innerText = data.confidence;
+
+					// Show result element
+					document.querySelector(".result").classList.remove("d-none");
+					
+
+					
+				}
+			});
+			
+
+		</script>
+</body>
+</html>
